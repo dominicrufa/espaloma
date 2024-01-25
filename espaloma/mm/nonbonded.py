@@ -179,3 +179,34 @@ def coulomb(x, q, k_e=K_E):
 
     """
     return 0.5 * k_e * q / x
+
+def coulomb_direct(x, q, alpha, k_e=K_E):
+    """Columb interaction without cutoff.
+
+    Parameters
+    ----------
+    x : `torch.Tensor`, shape=`(batch_size, 1)` or `(batch_size, batch_size, 1)`
+        Distance between atoms.
+
+    q : `torch.Tensor`,
+        `shape=(batch_size, 1) or `(batch_size, batch_size, 1)`
+        Product of charge.
+
+    alpha : `torch.Tensor`,
+        `shape=(batch_size, 1) or `(batch_size, batch_size, 1)`
+        alpha coeff of x in erfc fn; 
+        see http://docs.openmm.org/latest/userguide/theory/02_standard_forces.html#coulomb-interaction-with-particle-mesh-ewald
+    
+
+    Returns
+    -------
+    torch.Tensor : `shape=(batch_size, 1)` or `(batch_size, batch_size, 1)`
+        Coulomb energy.
+
+    Notes
+    -----
+    This computes half Coulomb direct space energy to count for the duplication in onefour
+        and nonbonded enumerations.
+
+    """
+    return 0.5 * k_e * q torch.erfc(alpha * x)/ x
