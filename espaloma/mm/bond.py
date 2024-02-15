@@ -7,7 +7,7 @@ import espaloma as esp
 # =============================================================================
 # MODULE FUNCTIONS
 # =============================================================================
-def harmonic_bond(x, k, eq):
+def harmonic_bond(x, k, eq, use_cos: bool=False):
     """Harmonic bond energy.
 
     Parameters
@@ -30,7 +30,7 @@ def harmonic_bond(x, k, eq):
 
     # NOTE:
     # 0.25 because all bonds are calculated twice
-    return 0.5 * esp.mm.functional.harmonic(x=x, k=k, eq=eq)
+    return 0.5 * esp.mm.functional.harmonic(x=x, k=k, eq=eq, use_cos=use_cos)
 
 
 def gaussian_bond(x, coefficients):
