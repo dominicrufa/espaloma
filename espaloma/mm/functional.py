@@ -34,7 +34,7 @@ def linear_mixture_to_original(k1, k2, b1, b2):
 # =============================================================================
 # MODULE FUNCTIONS
 # =============================================================================
-def harmonic(x, k, eq, order=[2]):
+def harmonic(x, k, eq, use_cos, order=[2]):
     """Harmonic term.
 
     Parameters
@@ -42,6 +42,7 @@ def harmonic(x, k, eq, order=[2]):
     x : `torch.Tensor`, `shape=(batch_size, 1)`
     k : `torch.Tensor`, `shape=(batch_size, len(order))`
     eq : `torch.Tensor`, `shape=(batch_size, len(order))`
+    use_cos: `torch.Tensor.bool`, `shape=(batch_size, len(order))`
     order : `int` or `List` of `int`
 
     Returns
@@ -51,6 +52,10 @@ def harmonic(x, k, eq, order=[2]):
 
     if isinstance(order, list):
         order = torch.tensor(order, device=x.device)
+
+    if use_cos:
+        x = torch.cos(x)
+        eq = torch.cos(x)
 
     return (
         0.5
