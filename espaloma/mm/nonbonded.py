@@ -180,7 +180,7 @@ def coulomb(x, q, k_e=K_E):
     """
     return 0.5 * k_e * q / x
 
-def coulomb_direct(x, q, beta=2.0, k_e=K_E):
+def coulomb_direct(x, q, beta=2.0, r_cut = 1.2, k_e=K_E):
     """Columb interaction without cutoff.
 
     Parameters
@@ -209,4 +209,8 @@ def coulomb_direct(x, q, beta=2.0, k_e=K_E):
         and nonbonded enumerations.
 
     """
-    return 0.5 * k_e * q * torch.erfc(beta * x)/ x
+    if x > r_cut:
+        out = 0.
+    else:
+        out = 0.5 * k_e * q * torch.erfc(beta * x)/ x
+    return out
