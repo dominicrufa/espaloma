@@ -285,21 +285,22 @@ def gaussian(x, coefficients, phases=[idx * 0.001 for idx in range(200)]):
     return (coefficients * torch.exp(-0.5 * (x - phases) ** 2)).sum(-1)
 
 
-def linear_mixture(x, coefficients, phases=[0.0, 1.0]):
+def linear_mixture(x, coefficients, phases=[0.0, 1.0], use_cos: bool=False):
     r"""Linear mixture basis function.
 
     x : torch.Tensor
     coefficients : list or torch.Tensor of length 2
     phases : list of length 2
     """
+    x = torch.cos(x) if use_cos else x
 
     assert len(phases) == 2, "Only two phases now."
     assert coefficients.shape[-1] == 2
 
     # partition the dimensions
     # (, )
-    b1 = phases[0]
-    b2 = phases[1]
+    b1 = phases[0] if not use_cos else torch.cos(b1)
+    b2 = phases[1] if not use_cos else torch.cos(b2)
 
     # (batch_size, 1)
     k1 = coefficients[:, 0][:, None]
