@@ -350,7 +350,7 @@ def energy_in_graph(
         )
 
     if ("onefour" in terms or "onefour_tm" in terms) and g.number_of_nodes("onefour") > 0:
-        direct = "nonbonded_tm" in terms
+        direct = "onefour_tm" in terms
         scaling = 0.5 if "onefour_tm" in terms else 0.8333333333333334
         g.apply_nodes(
             lambda node: apply_coulomb(
