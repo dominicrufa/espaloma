@@ -180,7 +180,7 @@ def coulomb(x, q, k_e=K_E):
     """
     return 0.5 * k_e * q / x
 
-def coulomb_direct(x, q, alpha, k_e=K_E):
+def coulomb_direct(x, q, beta=2.0, k_e=K_E):
     """Columb interaction without cutoff.
 
     Parameters
@@ -192,9 +192,9 @@ def coulomb_direct(x, q, alpha, k_e=K_E):
         `shape=(batch_size, 1) or `(batch_size, batch_size, 1)`
         Product of charge.
 
-    alpha : `torch.Tensor`,
+    beta : `torch.Tensor`,
         `shape=(batch_size, 1) or `(batch_size, batch_size, 1)`
-        alpha coeff of x in erfc fn; 
+        beta coeff of x in erfc fn; 
         see http://docs.openmm.org/latest/userguide/theory/02_standard_forces.html#coulomb-interaction-with-particle-mesh-ewald
     
 
@@ -209,4 +209,4 @@ def coulomb_direct(x, q, alpha, k_e=K_E):
         and nonbonded enumerations.
 
     """
-    return 0.5 * k_e * q torch.erfc(alpha * x)/ x
+    return 0.5 * k_e * q * torch.erfc(beta * x)/ x
