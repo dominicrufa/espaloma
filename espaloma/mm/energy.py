@@ -233,16 +233,16 @@ def apply_nonbonded(nodes, scaling=1.0, suffix=""):
     }
 
 
-def apply_coulomb(nodes, scaling=1.0, suffix=""):
+def apply_coulomb(nodes, scaling=1.0, suffix="", direct=False):
+    out_fn = esp.mm.nonbonded.coulomb_direct if direct else esp.mm.nonbonded.coulomb
     return {
         "u%s"
         % suffix: scaling
-        * esp.mm.nonbonded.coulomb(
+        * out_fn(
             x=nodes.data["x"],
             q=nodes.data["q"],
         )
     }
-
 
 # =============================================================================
 # ENERGY IN GRAPH
@@ -337,23 +337,27 @@ def energy_in_graph(
     if "nonbonded" in terms or "onefour" in terms:
         esp.mm.nonbonded.multiply_charges(g)
 
-    if "nonbonded" in terms and g.number_of_nodes("nonbonded") > 0:
+    if ("nonbonded" in terms or "nonbonded_tm" in terms) and g.number_of_nodes("nonbonded") > 0:
+        direct = "nonbonded_tm" in terms
         g.apply_nodes(
             lambda node: apply_coulomb(
                 node,
                 suffix=suffix,
                 scaling=1.0,
+                direct=direct,
             ),
             ntype="nonbonded",
         )
 
-    if "onefour" in terms and g.number_of_nodes("onefour") > 0:
+    if ("onefour" in terms or "onefour_tm" in terms) and g.number_of_nodes("onefour") > 0:
+        direct = "nonbonded_tm" in terms
+        scaling = 0.5 if "onefour_tm" in terms else 0.8333333333333334
         g.apply_nodes(
             lambda node: apply_coulomb(
                 node,
                 suffix=suffix,
-                # scaling=0.5,
-                scaling=0.8333333333333334,
+                scaling=scaling,
+                direct=direct,
             ),
             ntype="onefour",
         )
