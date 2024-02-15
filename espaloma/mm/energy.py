@@ -31,7 +31,7 @@ def apply_bond(nodes, suffix=""):
     #     }
 
 
-def apply_angle(nodes, suffix=""):
+def apply_angle(nodes, suffix="", use_cos=False):
     """Angle energy in nodes."""
     return {
         "u%s"
@@ -39,6 +39,7 @@ def apply_angle(nodes, suffix=""):
             x=nodes.data["x"],
             k=nodes.data["k%s" % suffix],
             eq=nodes.data["eq%s" % suffix],
+            use_cos=use_cos
         )
     }
 
@@ -201,7 +202,7 @@ def apply_bond_linear_mixture(nodes, suffix="", phases=[0.0, 1.0]):
     }
 
 
-def apply_angle_linear_mixture(nodes, suffix="", phases=[0.0, 1.0]):
+def apply_angle_linear_mixture(nodes, suffix="", phases=[0.0, 1.0], use_cos=False):
     """Bond energy in nodes."""
     # if suffix == '_ref':
     return {
@@ -210,6 +211,7 @@ def apply_angle_linear_mixture(nodes, suffix="", phases=[0.0, 1.0]):
             x=nodes.data["x"],
             coefficients=nodes.data["coefficients%s" % suffix],
             phases=phases,
+            use_cos=use_cos,
         )
     }
 
@@ -287,19 +289,20 @@ def energy_in_graph(
                 ntype="n2",
             )
 
-    if "n3" in terms:
+    if "n3" in terms or "n3_tm" in terms:
+        use_cos = True if "n3_tm" in terms else False
         if "coefficients%s" % suffix in g.nodes["n3"].data:
             import math
 
             g.apply_nodes(
                 lambda node: apply_angle_linear_mixture(
-                    node, suffix=suffix, phases=[0.0, math.pi]
+                    node, suffix=suffix, phases=[0.0, math.pi], use_cos=use_cos
                 ),
                 ntype="n3",
             )
         else:
             g.apply_nodes(
-                lambda node: apply_angle(node, suffix=suffix),
+                lambda node: apply_angle(node, suffix=suffix, use_cos=use_cos),
                 ntype="n3",
             )
 
